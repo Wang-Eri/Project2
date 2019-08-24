@@ -1,0 +1,269 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
+
+
+namespace Libary_Management_System
+{
+    public partial class AppBody : Form
+    {
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+
+        [DllImportAttribute("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd,
+                         int Msg, int wParam, int lParam);
+        [DllImportAttribute("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+
+
+        public AppBody()
+        {
+            InitializeComponent();
+
+            isSlidingPannelExpanded = true;
+            expandSlidingPannelGUI();
+
+        }
+
+        private void AppBody_Load(object sender, EventArgs e)
+        {
+            this.Opacity = 0.1;
+            Log_inTimer.Start();
+        }
+
+        private void Log_inTimer_Tick(object sender, EventArgs e)
+        {
+            if (this.Opacity <= 1.0)
+            {
+                this.Opacity += 0.025;
+
+            }
+            else
+            {
+                Log_inTimer.Stop();
+
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+       
+
+   
+ 
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Form1 obj = new Form1();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void panel2_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+
+        }
+
+
+
+        public void expandSlidingPannelGUI()
+        {
+            BooksTabButton.Text = "BOOKS";
+            BooksTabButton.Text = "BORROWERS";
+            BooksTabButton.Text = "TRANSACTION";
+
+            BooksTabButton.Text = "ADD BOOKS";
+            BooksTabButton.Text = "ABOUT";
+
+            SlidingPannel_ToggleButton.Image = Properties.Resources.left;
+
+            BooksTabButton.Image = null;
+            BorrowersTabButton.Image = null;
+            TransactionTabButton.Image = null;
+            SettingsTabButton.Image = null;
+            AboutTabButton.Image = null;
+
+        }
+
+        public void retractSlidingPannelGUI()
+        {
+            BooksTabButton.Text = "";
+            BooksTabButton.Text = "";
+            BooksTabButton.Text = "";
+
+            BooksTabButton.Text = "";
+            BooksTabButton.Text = "";
+
+
+            SlidingPannel_ToggleButton.Image = Properties.Resources.right;
+            BooksTabButton.Image = Properties.Resources._1;
+            BorrowersTabButton.Image = Properties.Resources.a;
+            TransactionTabButton.Image = Properties.Resources.b;
+            SettingsTabButton.Image = Properties.Resources.c;
+            AboutTabButton.Image = Properties.Resources.f;
+        }
+
+
+        bool isSlidingPannelExpanded;
+        const int MaxSlideWidth=270;
+        const int MinSlideWidth=70;
+
+
+        private void SlidingPannel_ToggleButton_Click(object sender, EventArgs e)
+        {
+             if (isSlidingPannelExpanded)
+            {
+                retractSlidingPannelGUI();
+            }
+           
+            
+                SliddingPannel_Timer.Start();
+            
+        }
+
+        private void SliddingPannel_Timer_Tick(object sender, EventArgs e)
+        {
+            if (isSlidingPannelExpanded)
+            {
+                //retract pannel
+                SlidingPannel.Width -= 30;
+                if (SlidingPannel.Width <= MinSlideWidth)
+                {
+                    isSlidingPannelExpanded = false;
+                    SliddingPannel_Timer.Stop();
+                    this.Refresh();
+                }
+
+            }
+            else
+            {// expand pannel 
+                SlidingPannel.Width += 30;
+                if (SlidingPannel.Width >= MaxSlideWidth)
+                {
+                    isSlidingPannelExpanded = true;
+                    expandSlidingPannelGUI();
+                    SliddingPannel_Timer.Stop();
+                    this.Refresh();
+                }
+
+            }
+
+        }
+
+        private void BooksTabButton_Click(object sender, EventArgs e)
+        {
+            if (!ContentPannel.Controls.Contains(Books_UserControl1.Instance))
+            {
+                ContentPannel.Controls.Add(Books_UserControl1.Instance);
+                Books_UserControl1.Instance.Dock = DockStyle.Fill;
+                Books_UserControl1.Instance.BringToFront();
+
+            }
+            else
+            {
+                Books_UserControl1.Instance.BringToFront();
+            }
+        }
+
+        private void BorrowersTabButton_Click(object sender, EventArgs e)
+        {
+            if (!ContentPannel.Controls.Contains(Transactions_UserControll.Instance))
+            {
+                ContentPannel.Controls.Add(Transactions_UserControll.Instance);
+                Transactions_UserControll.Instance.Dock = DockStyle.Fill;
+                Transactions_UserControll.Instance.BringToFront();
+
+            }
+            else
+            {
+                Transactions_UserControll.Instance.BringToFront();
+            }
+
+        }
+
+        private void SettingsTabButton_Click(object sender, EventArgs e)
+        {
+            if (!ContentPannel.Controls.Contains(Add_Books_UserControl1.Instance))
+            {
+                ContentPannel.Controls.Add(Add_Books_UserControl1.Instance);
+                Add_Books_UserControl1.Instance.Dock = DockStyle.Fill;
+                Add_Books_UserControl1.Instance.BringToFront();
+
+            }
+            else
+            {
+                Add_Books_UserControl1.Instance.BringToFront();
+            }
+
+        }
+
+        private void TransactionTabButton_Click(object sender, EventArgs e)
+        {
+            if (!ContentPannel.Controls.Contains(Transactions_UserControl1.Instance))
+            {
+                ContentPannel.Controls.Add(Transactions_UserControl1.Instance);
+                Transactions_UserControl1.Instance.Dock = DockStyle.Fill;
+                Transactions_UserControl1.Instance.BringToFront();
+
+            }
+            else
+            {
+                Transactions_UserControl1.Instance.BringToFront();
+            }
+
+        }
+
+        private void AboutTabButton_Click(object sender, EventArgs e)
+        {
+            if (!ContentPannel.Controls.Contains(About_UserControl1.Instance))
+            {
+                ContentPannel.Controls.Add(About_UserControl1.Instance);
+                About_UserControl1.Instance.Dock = DockStyle.Fill;
+                About_UserControl1.Instance.BringToFront();
+
+            }
+            else
+            {
+                About_UserControl1.Instance.BringToFront();
+            }
+
+        }
+
+        private void ContentPannel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+    }
+}
